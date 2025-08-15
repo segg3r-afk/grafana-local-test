@@ -1,0 +1,36 @@
+grafana:
+  adminUser: admin
+  adminPassword: admin
+  service:
+    type: ClusterIP
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      searchNamespace: ALL
+    alerts:
+      enabled: false
+      label: grafana_alert
+      searchNamespace: ALL
+  additionalDataSources:
+    - name: Alertmanager
+      type: alertmanager
+      url: http://kube-prometheus-stack-alertmanager.monitoring.svc:9093
+      access: proxy
+      isDefault: false
+
+  smtp:
+    enabled: true
+    host: smtp.gmail.com:587
+    user: YOUR_GMAIL_ADDRESS
+    password: YOUR_GMAIL_APP_PASSWORD
+    fromAddress: YOUR_GMAIL_ADDRESS
+    fromName: Grafana
+    startTLSPolicy: MandatoryStartTLS
+
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+

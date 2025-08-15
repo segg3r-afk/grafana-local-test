@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-alerting-rules
+  namespace: monitoring
+  labels:
+    grafana_alert: "1"
+data:
+  rules.yaml: |
+    apiVersion: 1
+    groups:
+      - orgId: 1
+        name: ActiveMQ Managed Alerts
+        folder: ActiveMQ
+        interval: 30s
+        rules:
+          - uid: amq-queue-high
+            title: ActiveMQQueueSizeTooHigh (Grafana)
+            for: 1m
+            condition: C
+            data:
+              - refId: A
+                datasourceUid: PROM_DS_UID
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                model:
+                  expr: max by (destination) (activemq_queue_size)
+                  interval: ""
+                  refId: A
+              - refId: B
+                datasourceUid: __expr__
+                model:
+                  type: threshold
+                  params: [1]
+                  refId: B
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  type: reduce
+                  expression: A
+                  reducer: last
+                  refId: C
+            annotations:
+              summary: ActiveMQ queue size high
+              description: Queue size exceeded 1 for over 1 minute.
+
+

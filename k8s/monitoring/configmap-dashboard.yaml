@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-activemq
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  activemq-dashboard.json: |
+    {{- /* Embedded file content is inlined at apply-time below */ -}}
+
+

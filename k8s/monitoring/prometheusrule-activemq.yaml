@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: activemq-queue-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: activemq.rules
+      rules:
+        - alert: ActiveMQQueueSizeTooHigh
+          expr: max by (destination) (activemq_queue_size) > 1
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: ActiveMQ queue '{{ $labels.destination }}' size high
+            description: Queue size is {{ $value }} messages for over 1 minute.
+
+

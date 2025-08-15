@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: activemq-jmx-exporter-config
+  namespace: activemq
+data:
+  config.yaml: |
+    lowercaseOutputName: true
+    lowercaseOutputLabelNames: true
+    rules:
+      - pattern: 'org.apache.activemq<type=Broker, brokerName=(.+), destinationType=Queue, destinationName=(.+)><>QueueSize'
+        name: activemq_queue_size
+        labels:
+          broker: $1
+          destination: $2
+        type: GAUGE
+      - pattern: 'org.apache.activemq<type=Broker, brokerName=(.+), destinationType=Queue, destinationName=(.+)><>EnqueueCount'
+        name: activemq_enqueue_total
+        labels:
+          broker: $1
+          destination: $2
+        type: COUNTER
+      - pattern: 'org.apache.activemq<type=Broker, brokerName=(.+), destinationType=Queue, destinationName=(.+)><>DequeueCount'
+        name: activemq_dequeue_total
+        labels:
+          broker: $1
+          destination: $2
+        type: COUNTER
+
+

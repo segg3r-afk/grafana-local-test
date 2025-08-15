@@ -1,0 +1,81 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1710132000000,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Queue Size (demo.queue)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "options": {
+        "legend": {"displayMode": "list", "placement": "bottom"},
+        "tooltip": {"mode": "single", "sort": "none"}
+      },
+      "targets": [
+        {
+          "expr": "activemq_queue_size{destination=\"demo.queue\"}",
+          "legendFormat": "demo.queue",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Alert: ActiveMQQueueSizeTooHigh",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "options": {
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "orientation": "auto",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "textMode": "value_and_name"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {"options": {"0": {"color": "green", "text": "OK"}}, "type": "value"},
+            {"options": {"1": {"color": "red", "text": "FIRING"}}, "type": "value"}
+          ]
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "ALERTS{alertname=\"ActiveMQQueueSizeTooHigh\",alertstate=\"firing\"}",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Custom Incrementing Metric",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+      "options": {
+        "legend": {"displayMode": "list", "placement": "bottom"},
+        "tooltip": {"mode": "single", "sort": "none"}
+      },
+      "targets": [
+        {
+          "expr": "rate(custom_incrementing_metric_total[5m])",
+          "legendFormat": "custom_incrementing_metric_rate",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["jms", "activemq"],
+  "templating": {"list": []},
+  "time": {"from": "now-15m", "to": "now"},
+  "timepicker": {},
+  "timezone": "",
+  "title": "Messaging and App Metrics Overview",
+  "version": 1
+}
+

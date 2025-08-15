@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: activemq
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: activemq
+  namespace: activemq
+  labels:
+    app: activemq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: activemq
+  template:
+    metadata:
+      labels:
+        app: activemq
+    spec:
+      initContainers:
+        - name: jmx-exporter-init
+          image: curlimages/curl:8.10.1
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              mkdir -p /opt/jmx_exporter
+              curl -fsSL -o /opt/jmx_exporter/jmx_prometheus_javaagent.jar https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.20.0/jmx_prometheus_javaagent-0.20.0.jar
+          volumeMounts:
+            - name: jmx-exporter
+              mountPath: /opt/jmx_exporter
+      containers:
+        - name: activemq
+          image: rmohr/activemq:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: ACTIVEMQ_MIN_MEMORY
+              value: "256"
+            - name: ACTIVEMQ_MAX_MEMORY
+              value: "512"
+            - name: ACTIVEMQ_OPTS
+              value: "-javaagent:/opt/jmx_exporter/jmx_prometheus_javaagent.jar=5556:/opt/jmx_exporter/config.yaml"
+          ports:
+            - containerPort: 61616
+              name: openwire
+            - containerPort: 8161
+              name: web
+            - containerPort: 5556
+              name: metrics
+          volumeMounts:
+            - name: jmx-exporter
+              mountPath: /opt/jmx_exporter
+            - name: jmx-exporter-config
+              mountPath: /opt/jmx_exporter/config.yaml
+              subPath: config.yaml
+      volumes:
+        - name: jmx-exporter
+          emptyDir: {}
+        - name: jmx-exporter-config
+          configMap:
+            name: activemq-jmx-exporter-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: activemq
+  namespace: activemq
+  labels:
+    app: activemq
+spec:
+  selector:
+    app: activemq
+  ports:
+    - name: openwire
+      port: 61616
+      targetPort: openwire
+    - name: web
+      port: 8161
+      targetPort: web
+    - name: metrics
+      port: 5556
+      targetPort: metrics
+
+

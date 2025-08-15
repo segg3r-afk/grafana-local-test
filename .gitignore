@@ -1,0 +1,41 @@
+# Build artifacts
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+
+# Maven
+pom.xml.versionsBackup
+release.properties
+.mvn/timing.properties
+
+# Spring Boot
+.spring-boot-devtools.properties
+
+# IDEs and editors
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+.vscode/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node (if any)
+node_modules/
+
+# Env
+.env
+
+# Temporary
+/tmp/
+
+
